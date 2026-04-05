@@ -16,9 +16,22 @@
     <div class="container">
         <h2>Наше меню</h2>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        <div class="row mt-5">
+        
+        <!-- Категории меню -->
+        <div class="row mt-4 mb-5">
+            <div class="col-12">
+                <div class="category-filters" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                    <button class="category-btn active" data-category="all">Все</button>
+                    {% for category in categories %}
+                    <button class="category-btn" data-category="{{ category.id }}">{{ category.name }}</button>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="row" id="burgers-container">
             {% for burger in burgers %}
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 mb-4 burger-item" data-category="{{ burger.category.id }}">
                 <div class="card h-100" style="border: none; box-shadow: 0 0 15px rgba(0,0,0,0.1);">
                     <div class="card-body">
                         <h3>{{ burger.name }}</h3>
@@ -43,6 +56,27 @@
         </div>
     </div>
 </section>
+
+<style>
+    .category-btn {
+        background: none;
+        border: 2px solid #F64B3C;
+        padding: 8px 25px;
+        border-radius: 25px;
+        color: #F64B3C;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .category-btn:hover {
+        background: #F64B3C;
+        color: white;
+    }
+    .category-btn.active {
+        background: #F64B3C;
+        color: white;
+    }
+</style>
 
 <!-- Reviews Section -->
 <section class="reviews-section" style="background-color: #F64B3C; color: white; padding: 50px 0;">
