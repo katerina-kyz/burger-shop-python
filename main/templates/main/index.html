@@ -1,0 +1,97 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" style="background: #333 url('https://i.postimg.cc/cLXkrCwC/burger1.png'); background-size: cover; background-position: center; color: white; padding: 150px 0;">
+    <div class="container">
+        <h1 style="font-size: calc(1.5rem + 3vw);">Get Cashback up to 50%</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse consectetur justo eu nunc consequat.</p>
+        <button class="order-btn">ORDER NOW</button>
+    </div>
+</div>
+
+<!-- Menu Section -->
+<section id="menu" class="popular-package text-center" style="padding: 50px 0;">
+    <div class="container">
+        <h2>Наше меню</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <div class="row mt-5">
+            {% for burger in burgers %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100" style="border: none; box-shadow: 0 0 15px rgba(0,0,0,0.1);">
+                    <div class="card-body">
+                        <h3>{{ burger.name }}</h3>
+                        <p class="text-muted">{{ burger.composition|truncatechars:60 }}</p>
+                        <p><strong style="color: #F64B3C; font-size: 24px;">{{ burger.price }} ₽</strong></p>
+                        <p><small>{{ burger.calories }} ккал</small></p>
+                        {% if user.is_authenticated %}
+                            <button class="order-btn add-to-cart" data-id="{{ burger.id }}">
+                                В корзину
+                            </button>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="order-btn" style="text-decoration: none; display: inline-block;">Войти для заказа</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p>Бургеры скоро появятся!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Reviews Section -->
+<section class="reviews-section" style="background-color: #F64B3C; color: white; padding: 50px 0;">
+    <div class="container">
+        <h2 class="text-center">Отзывы клиентов</h2>
+        <div class="row mt-5">
+            {% for review in recent_reviews %}
+            <div class="col-md-4 mb-4">
+                <div class="card bg-dark text-white h-100">
+                    <div class="card-body">
+                        <p>"{{ review.comment|truncatechars:100 }}"</p>
+                        <h5>{{ review.user.username }}</h5>
+                        <div>★ {{ review.rating }}/5</div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>Пока нет отзывов. Будьте первым!</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'reviews' %}" class="order-btn" style="background-color: white; color: #F64B3C;">Все отзывы</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', function() {
+        const burgerId = this.dataset.id;
+        fetch(`/add-to-cart/${burgerId}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                alert('Товар добавлен в корзину!');
+                const cartBadge = document.querySelector('.cart-badge');
+                if(cartBadge) cartBadge.textContent = data.cart_count;
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

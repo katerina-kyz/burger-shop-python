@@ -1,0 +1,83 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container" style="margin-top: 100px; margin-bottom: 50px;">
+    <h2 class="text-center mb-4">Оформление заказа</h2>
+    
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-body">
+                    <h4>Ваш заказ</h4>
+                    {% for item in cart_items %}
+                    <div class="mb-3">
+                        <strong>{{ item.burger.name }}</strong> x {{ item.quantity }} = {{ item.subtotal }} ₽
+                    </div>
+                    {% endfor %}
+                    <hr>
+                    <h5>Итого: {{ total }} ₽</h5>
+                    <p>За этот заказ вы получите {{ possible_bonuses }} бонусов</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-body">
+                    <h4>Данные для заказа</h4>
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Способ получения:</label>
+                            <select name="delivery_method" id="delivery_method" class="form-control" required>
+                                <option value="delivery">Доставка</option>
+                                <option value="pickup">Самовывоз</option>
+                            </select>
+                        </div>
+                        
+                        <div id="delivery_address_div" class="mb-3">
+                            <label class="form-label">Адрес доставки:</label>
+                            <textarea name="delivery_address" class="form-control" rows="3" placeholder="Ваш адрес..."></textarea>
+                        </div>
+                        
+                        <div id="pickup_point_div" class="mb-3" style="display: none;">
+                            <label class="form-label">Точка самовывоза:</label>
+                            <select name="pickup_point" class="form-control">
+                                <option value="">Выберите точку</option>
+                                {% for point in pickup_points %}
+                                <option value="{{ point.name }} - {{ point.address }}">{{ point.name }} ({{ point.address }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Использовать бонусы (у вас {{ user_bonuses }} баллов):</label>
+                            <input type="number" name="use_bonuses" class="form-control" min="0" max="{{ user_bonuses }}" value="0">
+                            <small class="text-muted">100 бонусов = 100 ₽ скидки</small>
+                        </div>
+                        
+                        <button type="submit" class="order-btn w-100">Подтвердить заказ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const deliveryMethod = document.getElementById('delivery_method');
+    const deliveryDiv = document.getElementById('delivery_address_div');
+    const pickupDiv = document.getElementById('pickup_point_div');
+    
+    deliveryMethod.addEventListener('change', function() {
+        if (this.value === 'delivery') {
+            deliveryDiv.style.display = 'block';
+            pickupDiv.style.display = 'none';
+        } else {
+            deliveryDiv.style.display = 'none';
+            pickupDiv.style.display = 'block';
+        }
+    });
+</script>
+{% endblock %}

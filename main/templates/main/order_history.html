@@ -1,0 +1,28 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container" style="margin-top: 100px; margin-bottom: 50px;">
+    <h2 class="text-center mb-4">Мои заказы</h2>
+    
+    {% if orders %}
+        {% for order in orders %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>Заказ #{{ order.id }}</h5>
+                <p>Дата: {{ order.created_at|date:"d.m.Y H:i" }}</p>
+                <p>Сумма: {{ order.total_amount }} ₽</p>
+                <p>Статус: 
+                    <span class="badge bg-{% if order.status == 'completed' %}success{% else %}warning{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </p>
+                <p>Использовано бонусов: {{ order.used_bonus_points }}</p>
+                <p>Начислено бонусов: {{ order.earned_bonus_points }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-center">У вас пока нет заказов</p>
+    {% endif %}
+</div>
+{% endblock %}

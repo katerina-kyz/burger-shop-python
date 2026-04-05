@@ -1,0 +1,39 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container" style="margin-top: 100px; margin-bottom: 50px;">
+    <h2 class="text-center mb-4">Отзывы</h2>
+    
+    {% if user.is_authenticated %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4>Оставить отзыв</h4>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="order-btn">Отправить</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="row">
+        {% for review in reviews %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>{{ review.user.username }}</h5>
+                    <div class="text-warning">★ {{ review.rating }}/5</div>
+                    <p class="mt-2">{{ review.comment }}</p>
+                    <small class="text-muted">{{ review.created_at|date:"d.m.Y" }}</small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p>Пока нет отзывов</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
