@@ -128,4 +128,33 @@ document.querySelectorAll('.add-to-cart').forEach(button => {
     });
 });
 </script>
+{% block extra_js %}
+{{ block.super }}
+<script>
+    // Фильтрация бургеров по категориям
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    const burgerItems = document.querySelectorAll('.burger-item');
+    
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Убираем активный класс со всех кнопок
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            // Добавляем активный класс на нажатую кнопку
+            this.classList.add('active');
+            
+            const categoryId = this.dataset.category;
+            
+            // Фильтруем бургеры
+            burgerItems.forEach(item => {
+                if (categoryId === 'all') {
+                    item.style.display = 'block';
+                } else if (item.dataset.category === categoryId) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
