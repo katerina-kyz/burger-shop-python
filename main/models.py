@@ -24,7 +24,8 @@ class Burger(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     composition = models.TextField(help_text="Состав бургера")
     calories = models.IntegerField()
-    image = models.ImageField(upload_to='burgers/', blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, null=True, verbose_name='URL изображения')
+    #image = models.ImageField(upload_to='burgers/', blank=True, null=True) 
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
