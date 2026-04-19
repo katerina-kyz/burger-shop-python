@@ -1,4 +1,4 @@
-from .models import OrderItem
+from .models import Burger
 
 def cart_count(request):
     """Передаёт количество товаров в корзине во все шаблоны"""
@@ -8,8 +8,17 @@ def cart_count(request):
         return {'cart_count': count}
     return {'cart_count': 0}
 
-def user_bonuses(request):
-    """Передаёт количество бонусов пользователя во все шаблоны"""
+def cart_total(request):
+    """Передаёт сумму заказа в корзине во все шаблоны"""
     if request.user.is_authenticated:
-        return {'user_bonuses': request.user.bonus_points}
-    return {'user_bonuses': 0}
+        cart = request.session.get('cart', {})
+        total = 0
+        for burger_id, quantity in cart.items():
+            try:
+                from .models import Burger
+                burger = Burger.objects.get(id=int(burger_id))
+                total += burger.price * quantity
+            except:
+                pass
+        return {'cart_total': total}
+    return {'cart_total': 0}

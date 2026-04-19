@@ -86,14 +86,27 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'reviews' %}">Отзывы</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'map' %}">Точки выдачи</a></li>
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link position-relative" href="{% url 'cart' %}">
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle position-relative" href="#" id="cartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-shopping-cart"></i>
                                 {% if cart_count > 0 %}
                                     <span class="cart-badge">{{ cart_count }}</span>
                                 {% endif %}
                             </a>
-                        </li>
+                            <div class="dropdown-menu dropdown-menu-end" style="min-width: 280px; padding: 15px;">
+                                <div class="text-center">
+                                    <strong style="color: #F64B3C;">🛒 Моя корзина</strong><br><br>
+                                    <span>📦 Товаров: <strong>{{ cart_count }}</strong></span><br>
+                                    <span>💰 Сумма: <strong style="color: #F64B3C;">{{ cart_total }} ₽</strong></span>
+                                </div>
+                                <hr class="my-2">
+                                <a href="{% url 'cart' %}" class="btn w-100" style="background-color: #F64B3C; color: white; border-radius: 25px;">
+                                    Перейти в корзину →
+                                </a>
+                            </div>
+                        </li>                                     
+                        
                         <li class="nav-item"><a class="nav-link" href="{% url 'order_history' %}">Мои заказы</a></li>
                         <li class="nav-item">
                             <span class="nav-link bonus-points">

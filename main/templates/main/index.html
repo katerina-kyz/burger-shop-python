@@ -152,9 +152,8 @@
             .then(response => response.json())
             .then(data => {
                 if(data.status === 'success') {
-                    alert('Товар добавлен в корзину!');
-                    const cartBadge = document.querySelector('.cart-badge');
-                    if(cartBadge) cartBadge.textContent = data.cart_count;
+                    // Обновляем страницу, чтобы обновились счетчики
+                    location.reload();
                 }
             });
         });
