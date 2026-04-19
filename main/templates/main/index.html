@@ -29,30 +29,28 @@
             </div>
         </div>
         
-        <div class="row" id="burgers-container">
-            {% for burger in burgers %}
-            <div class="col-md-4 mb-4 burger-item" data-category="{{ burger.category.id }}">
-                <div class="card h-100" style="border: none; box-shadow: 0 0 15px rgba(0,0,0,0.1);">
-                    <div class="card-body">
-                        <h3>{{ burger.name }}</h3>
-                        <p class="text-muted">{{ burger.composition|truncatechars:60 }}</p>
-                        <p><strong style="color: #F64B3C; font-size: 24px;">{{ burger.price }} ₽</strong></p>
-                        <p><small>{{ burger.calories }} ккал</small></p>
-                        {% if user.is_authenticated %}
-                            <button class="order-btn add-to-cart" data-id="{{ burger.id }}">
-                                В корзину
-                            </button>
-                        {% else %}
-                            <a href="{% url 'login' %}" class="order-btn" style="text-decoration: none; display: inline-block;">Войти для заказа</a>
-                        {% endif %}
-                    </div>
+        <div class="col-md-4 mb-4 burger-item" data-category="{{ burger.category.id }}">
+            <div class="card h-100" style="border: none; box-shadow: 0 0 15px rgba(0,0,0,0.1); border-radius: 15px; overflow: hidden;">
+                <!-- Фото бургера -->
+                {% if burger.image_url %}
+                <img src="{{ burger.image_url }}" alt="{{ burger.name }}" style="width: 100%; height: 200px; object-fit: cover;">
+                {% else %}
+                <img src="https://i.postimg.cc/8PVrrbmX/burger.png" alt="{{ burger.name }}" style="width: 100%; height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h3>{{ burger.name }}</h3>
+                    <p class="text-muted">{{ burger.composition|truncatechars:60 }}</p>
+                    <p><strong style="color: #F64B3C; font-size: 24px;">{{ burger.price }} ₽</strong></p>
+                    <p><small>{{ burger.calories }} ккал</small></p>
+                    {% if user.is_authenticated %}
+                        <button class="order-btn add-to-cart" data-id="{{ burger.id }}">
+                            В корзину
+                        </button>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="order-btn" style="text-decoration: none; display: inline-block;">Войти для заказа</a>
+                    {% endif %}
                 </div>
             </div>
-            {% empty %}
-            <div class="col-12">
-                <p>Бургеры скоро появятся!</p>
-            </div>
-            {% endfor %}
         </div>
     </div>
 </section>

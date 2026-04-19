@@ -10,8 +10,15 @@
                 <div class="card-body">
                     <h4>Ваш заказ</h4>
                     {% for item in cart_items %}
-                    <div class="mb-3">
-                        <strong>{{ item.burger.name }}</strong> x {{ item.quantity }} = {{ item.subtotal }} ₽
+                    <div class="mb-3 d-flex align-items-center">
+                        {% if item.burger.image_url %}
+                        <img src="{{ item.burger.image_url }}" alt="{{ item.burger.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 10px; margin-right: 15px;">
+                        {% else %}
+                        <img src="https://i.postimg.cc/8PVrrbmX/burger.png" alt="{{ item.burger.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 10px; margin-right: 15px;">
+                        {% endif %}
+                        <div>
+                            <strong>{{ item.burger.name }}</strong> x {{ item.quantity }} = {{ item.subtotal }} ₽
+                        </div>
                     </div>
                     {% endfor %}
                     <hr>

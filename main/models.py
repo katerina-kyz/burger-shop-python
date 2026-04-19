@@ -25,7 +25,6 @@ class Burger(models.Model):
     composition = models.TextField(help_text="Состав бургера")
     calories = models.IntegerField()
     image_url = models.URLField(max_length=500, blank=True, null=True, verbose_name='URL изображения')
-    #image = models.ImageField(upload_to='burgers/', blank=True, null=True) 
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     

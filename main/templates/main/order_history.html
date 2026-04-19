@@ -6,7 +6,7 @@
     
     {% if orders %}
         {% for order in orders %}
-        <div class="card mb-3">
+        <div class="card mb-3" style="border-radius: 15px;">
             <div class="card-body">
                 <h5>Заказ #{{ order.id }}</h5>
                 <p>Дата: {{ order.created_at|date:"d.m.Y H:i" }}</p>
@@ -18,6 +18,27 @@
                 </p>
                 <p>Использовано бонусов: {{ order.used_bonus_points }}</p>
                 <p>Начислено бонусов: {{ order.earned_bonus_points }}</p>
+                
+                <!-- Товары в заказе с фото -->
+                <hr>
+                <h6>Состав заказа:</h6>
+                <div class="row">
+                    {% for item in order.items.all %}
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <div class="d-flex align-items-center">
+                            {% if item.burger.image_url %}
+                            <img src="{{ item.burger.image_url }}" alt="{{ item.burger.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px; margin-right: 10px;">
+                            {% else %}
+                            <img src="https://i.postimg.cc/8PVrrbmX/burger.png" alt="{{ item.burger.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px; margin-right: 10px;">
+                            {% endif %}
+                            <div>
+                                <small><strong>{{ item.burger.name }}</strong></small><br>
+                                <small>{{ item.quantity }} шт. × {{ item.price }} ₽</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         {% endfor %}
