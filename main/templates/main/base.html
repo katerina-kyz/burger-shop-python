@@ -109,8 +109,10 @@
                         
                         <li class="nav-item"><a class="nav-link" href="{% url 'order_history' %}">Мои заказы</a></li>
                         <li class="nav-item">
-                            <span class="nav-link bonus-points">
-                                <i class="fas fa-star"></i> {{ user_bonuses }} бонусов
+                            <span class="nav-link bonus-points" style="display: flex; align-items: center; gap: 5px;">
+                                <i class="fas fa-star" style="color: #FFD700;"></i>
+                                <strong style="font-size: 16px;">{{ user_bonuses }}</strong>
+                                <span style="font-size: 12px;">бонусов</span>
                             </span>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Выйти</a></li>
