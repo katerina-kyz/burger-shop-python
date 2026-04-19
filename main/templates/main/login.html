@@ -2,25 +2,71 @@
 
 {% block content %}
 <div class="container" style="max-width: 500px; margin-top: 100px; margin-bottom: 100px;">
-    <div class="card">
-        <div class="card-body">
-            <h2 class="text-center mb-4">Вход</h2>
+    <div class="card" style="border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <div class="card-body" style="padding: 40px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="background: linear-gradient(135deg, #F64B3C, #ff8c6b); width: 70px; height: 70px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                    <i class="fas fa-hamburger" style="font-size: 30px; color: white;"></i>
+                </div>
+                <h2 style="color: #333; font-weight: bold;">Добро пожаловать!</h2>
+                <p style="color: #666;">Войдите в свой аккаунт</p>
+            </div>
+            
             <form method="post">
                 {% csrf_token %}
+                
                 <div class="mb-3">
-                    <label class="form-label">Имя пользователя</label>
-                    <input type="text" name="username" class="form-control" required>
+                    <label class="form-label" style="font-weight: 600; color: #555;">
+                        <i class="fas fa-user" style="color: #F64B3C; margin-right: 8px;"></i>Имя пользователя
+                    </label>
+                    <input type="text" name="username" class="form-control" required style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; transition: all 0.3s;">
                 </div>
+                
                 <div class="mb-3">
-                    <label class="form-label">Пароль</label>
-                    <input type="password" name="password" class="form-control" required>
+                    <label class="form-label" style="font-weight: 600; color: #555;">
+                        <i class="fas fa-lock" style="color: #F64B3C; margin-right: 8px;"></i>Пароль
+                    </label>
+                    <input type="password" name="password" class="form-control" required style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; transition: all 0.3s;">
                 </div>
-                <button type="submit" class="order-btn w-100">Войти</button>
+                
+                <button type="submit" class="btn w-100" style="background-color: #F64B3C; color: white; padding: 12px; border-radius: 25px; font-weight: bold; font-size: 16px; margin-top: 20px; border: none; transition: all 0.3s;">
+                    <i class="fas fa-sign-in-alt"></i> Войти
+                </button>
             </form>
-            <p class="text-center mt-3">
-                Нет аккаунта? <a href="{% url 'register' %}">Зарегистрируйтесь</a>
+            
+            <hr style="margin: 25px 0;">
+            
+            <p class="text-center" style="color: #666;">
+                Нет аккаунта? 
+                <a href="{% url 'register' %}" style="color: #F64B3C; text-decoration: none; font-weight: bold;">Зарегистрируйтесь</a>
             </p>
         </div>
     </div>
 </div>
+
+<style>
+    input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    input:focus {
+        outline: none;
+        border-color: #F64B3C;
+        box-shadow: 0 0 5px rgba(246, 75, 60, 0.3);
+    }
+    .card {
+        transition: transform 0.3s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    button:hover {
+        background-color: #d63b2c !important;
+        transform: scale(1.02);
+    }
+</style>
 {% endblock %}

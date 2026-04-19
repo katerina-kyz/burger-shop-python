@@ -2,26 +2,88 @@
 
 {% block content %}
 <div class="container" style="max-width: 500px; margin-top: 100px; margin-bottom: 100px;">
-    <div class="card">
-        <div class="card-body">
-            <h2 class="text-center mb-4">Регистрация</h2>
+    <div class="card" style="border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <div class="card-body" style="padding: 40px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="background: linear-gradient(135deg, #F64B3C, #ff8c6b); width: 70px; height: 70px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                    <i class="fas fa-user-plus" style="font-size: 30px; color: white;"></i>
+                </div>
+                <h2 style="color: #333; font-weight: bold;">Регистрация</h2>
+                <p style="color: #666;">Создайте аккаунт и получайте бонусы!</p>
+            </div>
+            
             <form method="post">
                 {% csrf_token %}
+                
                 {% for field in form %}
                 <div class="mb-3">
-                    <label class="form-label">{{ field.label }}</label>
+                    <label class="form-label" style="font-weight: 600; color: #555;">
+                        {% if field.name == 'username' %}
+                            <i class="fas fa-user" style="color: #F64B3C; margin-right: 8px;"></i>Имя пользователя
+                        {% elif field.name == 'email' %}
+                            <i class="fas fa-envelope" style="color: #F64B3C; margin-right: 8px;"></i>Email
+                        {% elif field.name == 'phone' %}
+                            <i class="fas fa-phone" style="color: #F64B3C; margin-right: 8px;"></i>Телефон
+                        {% elif field.name == 'password1' %}
+                            <i class="fas fa-lock" style="color: #F64B3C; margin-right: 8px;"></i>Пароль
+                        {% elif field.name == 'password2' %}
+                            <i class="fas fa-check-circle" style="color: #F64B3C; margin-right: 8px;"></i>Подтверждение пароля
+                        {% else %}
+                            {{ field.label }}
+                        {% endif %}
+                    </label>
                     {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
                     {% if field.errors %}
-                        <div class="text-danger">{{ field.errors }}</div>
+                        <div class="text-danger" style="font-size: 12px; margin-top: 5px;">
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
                     {% endif %}
                 </div>
                 {% endfor %}
-                <button type="submit" class="order-btn w-100">Зарегистрироваться</button>
+                
+                <button type="submit" class="btn w-100" style="background-color: #F64B3C; color: white; padding: 12px; border-radius: 25px; font-weight: bold; font-size: 16px; margin-top: 20px; border: none; transition: all 0.3s;">
+                    <i class="fas fa-user-plus"></i> Зарегистрироваться
+                </button>
             </form>
-            <p class="text-center mt-3">
-                Уже есть аккаунт? <a href="{% url 'login' %}">Войдите</a>
+            
+            <hr style="margin: 25px 0;">
+            
+            <p class="text-center" style="color: #666;">
+                Уже есть аккаунт? 
+                <a href="{% url 'login' %}" style="color: #F64B3C; text-decoration: none; font-weight: bold;">Войдите</a>
             </p>
         </div>
     </div>
 </div>
+
+<style>
+    input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    input:focus {
+        outline: none;
+        border-color: #F64B3C;
+        box-shadow: 0 0 5px rgba(246, 75, 60, 0.3);
+    }
+    .card {
+        transition: transform 0.3s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    button:hover {
+        background-color: #d63b2c !important;
+        transform: scale(1.02);
+    }
+</style>
 {% endblock %}
