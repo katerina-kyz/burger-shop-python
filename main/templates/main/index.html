@@ -29,28 +29,36 @@
             </div>
         </div>
         
-        <div class="col-md-4 mb-4 burger-item" data-category="{{ burger.category.id }}">
-            <div class="card h-100" style="border: none; box-shadow: 0 0 15px rgba(0,0,0,0.1); border-radius: 15px; overflow: hidden;">
-                <!-- Фото бургера -->
-                {% if burger.image_url %}
-                <img src="{{ burger.image_url }}" alt="{{ burger.name }}" style="width: 100%; height: 200px; object-fit: cover;">
-                {% else %}
-                <img src="https://i.postimg.cc/8PVrrbmX/burger.png" alt="{{ burger.name }}" style="width: 100%; height: 200px; object-fit: cover;">
-                {% endif %}
-                <div class="card-body">
-                    <h3>{{ burger.name }}</h3>
-                    <p class="text-muted">{{ burger.composition|truncatechars:60 }}</p>
-                    <p><strong style="color: #F64B3C; font-size: 24px;">{{ burger.price }} ₽</strong></p>
-                    <p><small>{{ burger.calories }} ккал</small></p>
-                    {% if user.is_authenticated %}
-                        <button class="order-btn add-to-cart" data-id="{{ burger.id }}">
-                            В корзину
-                        </button>
+        <div class="row" id="burgers-container">
+            {% for burger in burgers %}
+            <div class="col-md-4 mb-4 burger-item" data-category="{{ burger.category.id }}">
+                <div class="card h-100" style="border: none; box-shadow: 0 0 15px rgba(0,0,0,0.1); border-radius: 15px; overflow: hidden;">
+                    <!-- Фото бургера -->
+                    {% if burger.image_url %}
+                    <img src="{{ burger.image_url }}" alt="{{ burger.name }}" style="width: 100%; height: 200px; object-fit: cover;">
                     {% else %}
-                        <a href="{% url 'login' %}" class="order-btn" style="text-decoration: none; display: inline-block;">Войти для заказа</a>
+                    <img src="https://i.postimg.cc/8PVrrbmX/burger.png" alt="{{ burger.name }}" style="width: 100%; height: 200px; object-fit: cover;">
                     {% endif %}
+                    <div class="card-body">
+                        <h3 style="font-size: 1.3rem;">{{ burger.name }}</h3>
+                        <p class="text-muted" style="font-size: 0.9rem;">{{ burger.composition|truncatechars:60 }}</p>
+                        <p><strong style="color: #F64B3C; font-size: 24px;">{{ burger.price }} ₽</strong></p>
+                        <p><small>{{ burger.calories }} ккал</small></p>
+                        {% if user.is_authenticated %}
+                            <button class="order-btn add-to-cart" data-id="{{ burger.id }}">
+                                В корзину
+                            </button>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="order-btn" style="text-decoration: none; display: inline-block;">Войти для заказа</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-center">Бургеры скоро появятся!</p>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
@@ -62,30 +70,22 @@
         <div class="row">
             {% for review in recent_reviews %}
             <div class="col-md-4 mb-4">
-                <div class="review-card" style="background: white; border-radius: 15px; padding: 25px; color: #333; height: 100%; box-shadow: 0 5px 20px rgba(0,0,0,0.2); transition: transform 0.3s;">
-                    <div class="review-header" style="display: flex; align-items: center; margin-bottom: 15px;">
-                        <div class="review-avatar" style="width: 50px; height: 50px; background: linear-gradient(135deg, #F64B3C, #ff8c6b); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                            <i class="fas fa-user" style="color: white; font-size: 20px;"></i>
-                        </div>
-                        <div>
-                            <h5 style="margin: 0; color: #F64B3C; font-weight: bold;">{{ review.user.username }}</h5>
-                            <div class="review-stars" style="color: #FFD700; margin-top: 5px;">
-                                {% for i in "12345"|make_list %}
-                                    {% if forloop.counter <= review.rating %}
-                                        <i class="fas fa-star"></i>
-                                    {% else %}
-                                        <i class="far fa-star"></i>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
+                <div class="review-card" style="background: white; border-radius: 15px; padding: 20px; color: #333; height: 100%; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
+                    <div class="review-header" style="margin-bottom: 15px; border-bottom: 2px solid #F64B3C; padding-bottom: 10px;">
+                        <h4 style="margin: 0; color: #F64B3C;">{{ review.user.username }}</h4>
+                        <div style="color: #FFD700; font-size: 18px; margin-top: 5px;">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                            <span style="color: #999; font-size: 12px;"> ({{ review.rating }}/5)</span>
                         </div>
                     </div>
                     <div class="review-content">
-                        <p style="font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 0; font-style: italic;">
-                            "{{ review.comment|truncatechars:120 }}"
+                        <p style="font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 0;">
+                            "{{ review.comment }}"
                         </p>
                     </div>
-                    <div class="review-date" style="margin-top: 15px;">
+                    <div class="review-date" style="margin-top: 15px; text-align: right;">
                         <small style="color: #999;">{{ review.created_at|date:"d.m.Y" }}</small>
                     </div>
                 </div>
@@ -93,15 +93,14 @@
             {% empty %}
             <div class="col-12 text-center">
                 <div style="background: rgba(255,255,255,0.2); border-radius: 15px; padding: 40px;">
-                    <i class="fas fa-comment-dots" style="font-size: 50px; margin-bottom: 15px;"></i>
-                    <p style="font-size: 18px;">Пока нет отзывов. Будьте первым!</p>
+                    <p style="font-size: 18px;">✨ Пока нет отзывов. Будьте первым! ✨</p>
                 </div>
             </div>
             {% endfor %}
         </div>
         <div class="text-center mt-5">
-            <a href="{% url 'reviews' %}" class="order-btn" style="background-color: white; color: #F64B3C; padding: 12px 35px; font-size: 16px; font-weight: bold; border-radius: 30px; text-decoration: none; display: inline-block; transition: all 0.3s;">
-                <i class="fas fa-comments"></i> Все отзывы
+            <a href="{% url 'reviews' %}" class="order-btn" style="background-color: white; color: #F64B3C; padding: 12px 35px; font-size: 16px; font-weight: bold; border-radius: 30px; text-decoration: none; display: inline-block;">
+                📖 Все отзывы
             </a>
         </div>
     </div>
@@ -127,10 +126,10 @@
         color: white;
     }
     
-    /* Стили для карточек отзывов */
     .review-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        transition: all 0.3s;
     }
 </style>
 {% endblock %}
@@ -150,7 +149,7 @@
             .then(response => response.json())
             .then(data => {
                 if(data.status === 'success') {
-                    // Обновляем страницу, чтобы обновились счетчики
+                    alert('Товар добавлен в корзину!');
                     location.reload();
                 }
             });
