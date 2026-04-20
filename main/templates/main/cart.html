@@ -1,48 +1,74 @@
 {% extends 'main/base.html' %}
 
+{% block extra_css %}
+<style>
+    body {
+        background-image: url('https://i.postimg.cc/JmS3LNZk/fon.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+    .cart-container {
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 20px;
+        padding: 30px;
+        margin-top: 100px;
+        margin-bottom: 50px;
+    }
+    .card {
+        background: white;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container" style="margin-top: 100px; margin-bottom: 50px;">
-    <h2 class="text-center mb-4">Корзина</h2>
-    
-    {% if cart_items %}
-        <div class="row">
-            <div class="col-md-8">
-                {% for item in cart_items %}
-                <div class="card mb-3" style="border-radius: 15px; overflow: hidden;">
-                    <div class="row g-0">
-                        <div class="col-md-3">
-                            {% if item.burger.image_url %}
-                            <img src="{{ item.burger.image_url }}" class="img-fluid" alt="{{ item.burger.name }}" style="height: 150px; width: 100%; object-fit: cover;">
-                            {% else %}
-                            <img src="https://i.postimg.cc/8PVrrbmX/burger.png" class="img-fluid" alt="{{ item.burger.name }}" style="height: 150px; width: 100%; object-fit: cover;">
-                            {% endif %}
-                        </div>
-                        <div class="col-md-9">
-                            <div class="card-body">
-                                <h4>{{ item.burger.name }}</h4>
-                                <p>{{ item.burger.composition|truncatechars:100 }}</p>
-                                <p>{{ item.burger.price }} ₽ × {{ item.quantity }} = <strong>{{ item.subtotal }} ₽</strong></p>
+<div class="container">
+    <div class="cart-container">
+        <h2 class="text-center mb-4">Корзина</h2>
+        
+        {% if cart_items %}
+            <div class="row">
+                <div class="col-md-8">
+                    {% for item in cart_items %}
+                    <div class="card mb-3" style="border-radius: 15px; overflow: hidden;">
+                        <div class="row g-0">
+                            <div class="col-md-3">
+                                {% if item.burger.image_url %}
+                                <img src="{{ item.burger.image_url }}" class="img-fluid" alt="{{ item.burger.name }}" style="height: 150px; width: 100%; object-fit: cover;">
+                                {% else %}
+                                <img src="https://i.postimg.cc/8PVrrbmX/burger.png" class="img-fluid" alt="{{ item.burger.name }}" style="height: 150px; width: 100%; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <h4>{{ item.burger.name }}</h4>
+                                    <p>{{ item.burger.composition|truncatechars:100 }}</p>
+                                    <p>{{ item.burger.price }} ₽ × {{ item.quantity }} = <strong>{{ item.subtotal }} ₽</strong></p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h4>Итого: {{ total }} ₽</h4>
-                        <p>За этот заказ вы получите {{ possible_bonuses }} бонусов</p>
-                        <a href="{% url 'checkout' %}" class="order-btn w-100 text-center" style="text-decoration: none;">Оформить заказ</a>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>Итого: {{ total }} ₽</h4>
+                            <p>За этот заказ вы получите {{ possible_bonuses }} бонусов</p>
+                            <a href="{% url 'checkout' %}" class="order-btn w-100 text-center" style="text-decoration: none;">Оформить заказ</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% else %}
-        <p class="text-center">Корзина пуста</p>
-        <div class="text-center">
-            <a href="{% url 'index' %}" class="order-btn">Перейти к меню</a>
-        </div>
-    {% endif %}
+        {% else %}
+            <p class="text-center">Корзина пуста</p>
+            <div class="text-center">
+                <a href="{% url 'index' %}" class="order-btn">Перейти к меню</a>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
