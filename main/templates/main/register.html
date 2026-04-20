@@ -30,36 +30,43 @@
             <form method="post">
                 {% csrf_token %}
                 
-                {% for field in form %}
                 <div class="mb-3">
                     <label class="form-label" style="font-weight: 600; color: #555;">
-                        {% if field.name == 'username' %}
-                            <i class="fas fa-user" style="color: #F64B3C; margin-right: 8px;"></i>Имя пользователя
-                        {% elif field.name == 'email' %}
-                            <i class="fas fa-envelope" style="color: #F64B3C; margin-right: 8px;"></i>Email
-                        {% elif field.name == 'phone' %}
-                            <i class="fas fa-phone" style="color: #F64B3C; margin-right: 8px;"></i>Телефон
-                        {% elif field.name == 'password1' %}
-                            <i class="fas fa-lock" style="color: #F64B3C; margin-right: 8px;"></i>Пароль
-                        {% elif field.name == 'password2' %}
-                            <i class="fas fa-check-circle" style="color: #F64B3C; margin-right: 8px;"></i>Подтверждение пароля
-                        {% else %}
-                            {{ field.label }}
-                        {% endif %}
+                        <i class="fas fa-user" style="color: #F64B3C; margin-right: 8px;"></i>Имя пользователя
                     </label>
-                    {{ field }}
-                    {% if field.help_text %}
-                        <small class="form-text text-muted">{{ field.help_text }}</small>
-                    {% endif %}
-                    {% if field.errors %}
-                        <div class="text-danger" style="font-size: 12px; margin-top: 5px;">
-                            {% for error in field.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                    <input type="text" name="username" class="form-control" required style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px;">
+                    <small class="text-muted">Обязательное поле. Не более 150 символов. Только буквы, цифры и символы @/./+/-/_.</small>
                 </div>
-                {% endfor %}
+                
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #555;">
+                        <i class="fas fa-envelope" style="color: #F64B3C; margin-right: 8px;"></i>Электронная почта
+                    </label>
+                    <input type="email" name="email" class="form-control" required style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px;">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #555;">
+                        <i class="fas fa-phone" style="color: #F64B3C; margin-right: 8px;"></i>Номер телефона
+                    </label>
+                    <input type="text" name="phone" class="form-control" required style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px;">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #555;">
+                        <i class="fas fa-lock" style="color: #F64B3C; margin-right: 8px;"></i>Пароль
+                    </label>
+                    <input type="password" name="password1" class="form-control" required style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px;">
+                    <small class="text-muted">Пароль не должен быть слишком похож на другую вашу личную информацию. Должен содержать не менее 8 символов.</small>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #555;">
+                        <i class="fas fa-check-circle" style="color: #F64B3C; margin-right: 8px;"></i>Подтверждение пароля
+                    </label>
+                    <input type="password" name="password2" class="form-control" required style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px;">
+                    <small class="text-muted">Введите тот же пароль, что и выше, для подтверждения.</small>
+                </div>
                 
                 <button type="submit" class="btn w-100" style="background-color: #F64B3C; color: white; padding: 12px; border-radius: 25px; font-weight: bold; font-size: 16px; margin-top: 20px; border: none; transition: all 0.3s;">
                     <i class="fas fa-user-plus"></i> Зарегистрироваться
