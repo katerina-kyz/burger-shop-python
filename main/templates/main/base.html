@@ -67,6 +67,28 @@
         main {
             margin-top: 70px;
         }
+        .login-page, .register-page {
+            background-image: url('https://i.postimg.cc/JmS3LNZk/fon.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* Фон для секции меню на главной */
+        .menu-section {
+            background-image: url('https://i.postimg.cc/JmS3LNZk/fon.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Стили для карточек на светлом фоне, чтобы они читались */
+        .login-page .card,
+        .register-page .card,
+        .menu-section .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(2px);
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
