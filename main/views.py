@@ -116,6 +116,65 @@ def cart_view(request):
     return render(request, 'main/cart.html', context)
 
 @login_required
+def update_cart_item(request):
+    """Обновление количества товара в корзине"""
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        burger_id = str(data.get('burger_id'))
+        quantity = int(data.get('quantity'))
+        
+        cart = request.session.get('cart', {})
+        
+        if quantity <= 0:
+            # Удаляем товар если количество 0 или меньше
+            cart.pop(burger_id, None)
+        else:
+            cart[burger_id] = quantity
+        
+        request.session['cart'] = cart
+        
+        # Пересчитываем общую сумму
+        total = 0
+        for bid, qty in cart.items():
+            burger = Burger.objects.get(id=int(bid))
+            total += burger.price * qty
+        
+        return JsonResponse({
+            'status': 'success',
+            'cart_count': sum(cart.values()),
+            'total': float(total)
+        })
+    
+    return JsonResponse({'status': 'error'}, status=400)
+
+@login_required
+def remove_cart_item(request):
+    """Удаление товара из корзины"""
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        burger_id = str(data.get('burger_id'))
+        
+        cart = request.session.get('cart', {})
+        
+        if burger_id in cart:
+            del cart[burger_id]
+            request.session['cart'] = cart
+        
+        # Пересчитываем общую сумму
+        total = 0
+        for bid, qty in cart.items():
+            burger = Burger.objects.get(id=int(bid))
+            total += burger.price * qty
+        
+        return JsonResponse({
+            'status': 'success',
+            'cart_count': sum(cart.values()),
+            'total': float(total)
+        })
+    
+    return JsonResponse({'status': 'error'}, status=400)
+
+@login_required
 def checkout(request):
     """Оформление заказа"""
     cart = request.session.get('cart', {})

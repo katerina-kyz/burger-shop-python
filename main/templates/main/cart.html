@@ -1,74 +1,242 @@
 {% extends 'main/base.html' %}
 
-{% block extra_css %}
-<style>
-    body {
-        background-image: url('https://i.postimg.cc/JmS3LNZk/fon.png');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-    }
-    .cart-container {
-        background: rgba(255, 255, 255, 0.92);
-        border-radius: 20px;
-        padding: 30px;
-        margin-top: 100px;
-        margin-bottom: 50px;
-    }
-    .card {
-        background: white;
-        border: none;
-        border-radius: 15px;
-        overflow: hidden;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container">
-    <div class="cart-container">
-        <h2 class="text-center mb-4">Корзина</h2>
-        
-        {% if cart_items %}
-            <div class="row">
-                <div class="col-md-8">
-                    {% for item in cart_items %}
-                    <div class="card mb-3" style="border-radius: 15px; overflow: hidden;">
-                        <div class="row g-0">
-                            <div class="col-md-3">
-                                {% if item.burger.image_url %}
-                                <img src="{{ item.burger.image_url }}" class="img-fluid" alt="{{ item.burger.name }}" style="height: 150px; width: 100%; object-fit: cover;">
-                                {% else %}
-                                <img src="https://i.postimg.cc/8PVrrbmX/burger.png" class="img-fluid" alt="{{ item.burger.name }}" style="height: 150px; width: 100%; object-fit: cover;">
-                                {% endif %}
-                            </div>
-                            <div class="col-md-9">
-                                <div class="card-body">
+<div class="container" style="margin-top: 100px; margin-bottom: 50px;">
+    <h2 class="text-center mb-4">Корзина</h2>
+    
+    {% if cart_items %}
+        <div class="row">
+            <div class="col-md-8">
+                {% for item in cart_items %}
+                <div class="card mb-3" style="border-radius: 15px; overflow: hidden;" data-burger-id="{{ item.burger.id }}">
+                    <div class="row g-0">
+                        <div class="col-md-3">
+                            {% if item.burger.image_url %}
+                            <img src="{{ item.burger.image_url }}" class="img-fluid" alt="{{ item.burger.name }}" style="height: 150px; width: 100%; object-fit: cover;">
+                            {% else %}
+                            <img src="https://i.postimg.cc/8PVrrbmX/burger.png" class="img-fluid" alt="{{ item.burger.name }}" style="height: 150px; width: 100%; object-fit: cover;">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-9">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
                                     <h4>{{ item.burger.name }}</h4>
-                                    <p>{{ item.burger.composition|truncatechars:100 }}</p>
-                                    <p>{{ item.burger.price }} ₽ × {{ item.quantity }} = <strong>{{ item.subtotal }} ₽</strong></p>
+                                    <button class="btn btn-outline-danger btn-sm remove-item" data-id="{{ item.burger.id }}" style="border-radius: 20px;">
+                                        <i class="fas fa-trash"></i> Удалить
+                                    </button>
+                                </div>
+                                <p class="text-muted">{{ item.burger.composition|truncatechars:100 }}</p>
+                                <p>{{ item.burger.price }} ₽</p>
+                                
+                                <!-- Управление количеством -->
+                                <div class="d-flex align-items-center mt-2">
+                                    <label class="me-2">Количество:</label>
+                                    <div class="quantity-controls d-flex align-items-center">
+                                        <button class="btn btn-outline-secondary btn-sm decrease-qty" data-id="{{ item.burger.id }}" style="border-radius: 20px; width: 35px;">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <span class="mx-3 quantity-display" style="min-width: 40px; text-align: center; font-weight: bold;">
+                                            {{ item.quantity }}
+                                        </span>
+                                        <button class="btn btn-outline-secondary btn-sm increase-qty" data-id="{{ item.burger.id }}" style="border-radius: 20px; width: 35px;">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="ms-4">
+                                        <strong style="color: #F64B3C;">
+                                            Сумма: <span class="item-subtotal">{{ item.subtotal }}</span> ₽
+                                        </strong>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4>Итого: {{ total }} ₽</h4>
-                            <p>За этот заказ вы получите {{ possible_bonuses }} бонусов</p>
-                            <a href="{% url 'checkout' %}" class="order-btn w-100 text-center" style="text-decoration: none;">Оформить заказ</a>
-                        </div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4">
+                <div class="card" style="border-radius: 15px; position: sticky; top: 100px;">
+                    <div class="card-body">
+                        <h4>Итого: <span id="cart-total">{{ total }}</span> ₽</h4>
+                        <p>За этот заказ вы получите <span id="possible-bonuses">{{ possible_bonuses }}</span> бонусов</p>
+                        <a href="{% url 'checkout' %}" class="order-btn w-100 text-center" style="text-decoration: none;">Оформить заказ</a>
                     </div>
                 </div>
             </div>
-        {% else %}
-            <p class="text-center">Корзина пуста</p>
-            <div class="text-center">
-                <a href="{% url 'index' %}" class="order-btn">Перейти к меню</a>
-            </div>
-        {% endif %}
-    </div>
+        </div>
+    {% else %}
+        <p class="text-center">Корзина пуста</p>
+        <div class="text-center">
+            <a href="{% url 'index' %}" class="order-btn">Перейти к меню</a>
+        </div>
+    {% endif %}
 </div>
+
+<style>
+    .quantity-controls button {
+        transition: all 0.2s;
+    }
+    .quantity-controls button:hover {
+        background-color: #F64B3C;
+        color: white;
+        border-color: #F64B3C;
+    }
+    .remove-item:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+</style>
+
+<script>
+    // Функция обновления корзины
+    async function updateCart(burgerId, quantity) {
+        try {
+            const response = await fetch('/cart/update/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    burger_id: burgerId,
+                    quantity: quantity
+                })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                // Обновляем итоговую сумму
+                document.getElementById('cart-total').textContent = data.total;
+                // Обновляем бонусы
+                const newBonuses = Math.floor(data.total / 10);
+                document.getElementById('possible-bonuses').textContent = newBonuses;
+                // Обновляем счетчик корзины в шапке
+                const cartBadge = document.querySelector('.cart-badge');
+                if (cartBadge) {
+                    if (data.cart_count > 0) {
+                        cartBadge.textContent = data.cart_count;
+                        cartBadge.style.display = 'inline-block';
+                    } else {
+                        cartBadge.style.display = 'none';
+                    }
+                }
+                return true;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        return false;
+    }
+    
+    // Функция удаления товара
+    async function removeItem(burgerId, cardElement) {
+        try {
+            const response = await fetch('/cart/remove/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    burger_id: burgerId
+                })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                // Удаляем карточку товара
+                cardElement.remove();
+                // Обновляем итоговую сумму
+                document.getElementById('cart-total').textContent = data.total;
+                // Обновляем бонусы
+                const newBonuses = Math.floor(data.total / 10);
+                document.getElementById('possible-bonuses').textContent = newBonuses;
+                // Обновляем счетчик корзины в шапке
+                const cartBadge = document.querySelector('.cart-badge');
+                if (cartBadge) {
+                    if (data.cart_count > 0) {
+                        cartBadge.textContent = data.cart_count;
+                        cartBadge.style.display = 'inline-block';
+                    } else {
+                        cartBadge.style.display = 'none';
+                    }
+                }
+                // Если корзина пуста, перезагружаем страницу
+                if (data.cart_count === 0) {
+                    location.reload();
+                }
+                return true;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        return false;
+    }
+    
+    // Получение CSRF токена
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Обработчики событий
+    document.querySelectorAll('.increase-qty').forEach(button => {
+        button.addEventListener('click', async function() {
+            const burgerId = this.dataset.id;
+            const card = this.closest('.card');
+            const quantitySpan = card.querySelector('.quantity-display');
+            const subtotalSpan = card.querySelector('.item-subtotal');
+            let currentQty = parseInt(quantitySpan.textContent);
+            const newQty = currentQty + 1;
+            
+            const success = await updateCart(burgerId, newQty);
+            if (success) {
+                quantitySpan.textContent = newQty;
+                // Получаем цену из карточки
+                const priceText = card.querySelector('p').textContent;
+                const price = parseFloat(priceText.replace('₽', '').trim());
+                subtotalSpan.textContent = (price * newQty).toFixed(2);
+            }
+        });
+    });
+    
+    document.querySelectorAll('.decrease-qty').forEach(button => {
+        button.addEventListener('click', async function() {
+            const burgerId = this.dataset.id;
+            const card = this.closest('.card');
+            const quantitySpan = card.querySelector('.quantity-display');
+            const subtotalSpan = card.querySelector('.item-subtotal');
+            let currentQty = parseInt(quantitySpan.textContent);
+            
+            if (currentQty > 1) {
+                const newQty = currentQty - 1;
+                const success = await updateCart(burgerId, newQty);
+                if (success) {
+                    quantitySpan.textContent = newQty;
+                    const priceText = card.querySelector('p').textContent;
+                    const price = parseFloat(priceText.replace('₽', '').trim());
+                    subtotalSpan.textContent = (price * newQty).toFixed(2);
+                }
+            }
+        });
+    });
+    
+    document.querySelectorAll('.remove-item').forEach(button => {
+        button.addEventListener('click', async function() {
+            const burgerId = this.dataset.id;
+            const card = this.closest('.card');
+            if (confirm('Удалить этот товар из корзины?')) {
+                await removeItem(burgerId, card);
+            }
+        });
+    });
+</script>
 {% endblock %}
