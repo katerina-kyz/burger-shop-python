@@ -24,14 +24,28 @@
                     <hr>
                     <h5>Сумма заказа: {{ total }} ₽</h5>
                     
-                    <!-- ===== ИНФОРМАЦИЯ О ДОСТАВКЕ ===== -->
-                    <div id="delivery-info" class="delivery-info" style="background: #f8f9fa; padding: 12px; border-radius: 10px; margin: 15px 0;">
-                        <!-- Содержимое обновляется через JavaScript -->
-                        <p><i class="fas fa-truck"></i> Выберите способ получения</p>
+                    <!-- Блок информации о доставке -->
+                    <div style="background: #f8f9fa; padding: 12px; border-radius: 10px; margin: 15px 0;">
+                        {% if total >= free_delivery_threshold %}
+                            <p style="color: green; margin: 0;">
+                                🚚 <strong>Бесплатная доставка!</strong>
+                            </p>
+                            <small>Доставка бесплатна при заказе от {{ free_delivery_threshold }} ₽</small>
+                        {% else %}
+                            <p style="color: #F64B3C; margin: 0;">
+                                🚚 <strong>Стоимость доставки: {{ delivery_cost }} ₽</strong>
+                            </p>
+                            <small>Добавьте {{ free_delivery_threshold|add:"-"|add:total }} ₽ для бесплатной доставки</small>
+                        {% endif %}
                     </div>
                     
-                    <h4 id="final-total-block" style="color: #F64B3C;">
-                        Итого к оплате: <span id="final-total">{{ total }}</span> ₽
+                    <h4 style="color: #F64B3C;">
+                        Итого к оплате: 
+                        {% if total >= free_delivery_threshold %}
+                            {{ total }} ₽
+                        {% else %}
+                            {{ total|add:delivery_cost }} ₽
+                        {% endif %}
                     </h4>
                     <p>За этот заказ вы получите {{ possible_bonuses }} бонусов</p>
                 </div>
@@ -42,13 +56,13 @@
             <div class="card">
                 <div class="card-body">
                     <h4>Данные для заказа</h4>
-                    <form method="post" id="order-form">
+                    <form method="post">
                         {% csrf_token %}
                         
                         <div class="mb-3">
                             <label class="form-label">Способ получения:</label>
                             <select name="delivery_method" id="delivery_method" class="form-control" required>
-                                <option value="delivery">Доставка</option>
+                                <option value="delivery" selected>Доставка</option>
                                 <option value="pickup">Самовывоз</option>
                             </select>
                         </div>
@@ -70,12 +84,9 @@
                         
                         <div class="mb-3">
                             <label class="form-label">Использовать бонусы (у вас {{ user_bonuses }} баллов):</label>
-                            <input type="number" name="use_bonuses" id="use_bonuses" class="form-control" min="0" max="{{ user_bonuses }}" value="0">
+                            <input type="number" name="use_bonuses" class="form-control" min="0" max="{{ user_bonuses }}" value="0">
                             <small class="text-muted">100 бонусов = 100 ₽ скидки</small>
                         </div>
-                        
-                        <!-- Скрытое поле для передачи стоимости доставки -->
-                        <input type="hidden" name="delivery_cost" id="delivery_cost" value="0">
                         
                         <button type="submit" class="order-btn w-100">Подтвердить заказ</button>
                     </form>
@@ -90,77 +101,6 @@
     const deliveryDiv = document.getElementById('delivery_address_div');
     const pickupDiv = document.getElementById('pickup_point_div');
     
-    // Параметры доставки
-    const totalAmount = {{ total }};
-    const freeDeliveryThreshold = 1000;
-    const deliveryPrice = 300;
-    
-    function updateDeliveryInfo() {
-        const method = deliveryMethod.value;
-        const deliveryInfoDiv = document.getElementById('delivery-info');
-        const finalTotalSpan = document.getElementById('final-total');
-        const deliveryCostInput = document.getElementById('delivery_cost');
-        let deliveryCost = 0;
-        let finalTotal = totalAmount;
-        let infoHtml = '';
-        
-        if (method === 'pickup') {
-            // Самовывоз — бесплатно
-            deliveryCost = 0;
-            finalTotal = totalAmount;
-            infoHtml = `
-                <p style="color: green; margin: 0;">
-                    <i class="fas fa-store"></i> <strong>Самовывоз — бесплатно</strong>
-                </p>
-            `;
-        } else {
-            // Доставка
-            if (totalAmount >= freeDeliveryThreshold) {
-                deliveryCost = 0;
-                finalTotal = totalAmount;
-                infoHtml = `
-                    <p style="color: green; margin: 0;">
-                        <i class="fas fa-truck"></i> <strong>Бесплатная доставка!</strong>
-                    </p>
-                    <small>Доставка бесплатна при заказе от ${freeDeliveryThreshold} ₽</small>
-                `;
-            } else {
-                deliveryCost = deliveryPrice;
-                finalTotal = totalAmount + deliveryPrice;
-                infoHtml = `
-                    <p style="color: #F64B3C; margin: 0;">
-                        <i class="fas fa-truck"></i> <strong>Стоимость доставки: ${deliveryPrice} ₽</strong>
-                    </p>
-                    <small>Добавьте ${freeDeliveryThreshold - totalAmount} ₽ для бесплатной доставки</small>
-                `;
-            }
-        }
-        
-        // Обновляем информацию на странице
-        deliveryInfoDiv.innerHTML = infoHtml;
-        finalTotalSpan.textContent = finalTotal;
-        deliveryCostInput.value = deliveryCost;
-    }
-    
-    // Обновление итоговой суммы при использовании бонусов
-    const bonusesInput = document.getElementById('use_bonuses');
-    function updateFinalTotalWithBonuses() {
-        let currentTotal = parseInt(finalTotalSpan.textContent);
-        const bonuses = parseInt(bonusesInput.value) || 0;
-        let finalWithBonuses = currentTotal - bonuses;
-        if (finalWithBonuses < 0) finalWithBonuses = 0;
-        
-        const finalTotalBlock = document.getElementById('final-total-block');
-        if (bonuses > 0) {
-            finalTotalBlock.innerHTML = `Итого к оплате: <span id="final-total">${finalWithBonuses}</span> ₽<br>
-            <small style="color: green;">✓ Скидка ${bonuses} ₽ по бонусам</small>`;
-        } else {
-            finalTotalBlock.innerHTML = `Итого к оплате: <span id="final-total">${finalWithBonuses}</span> ₽`;
-        }
-        document.getElementById('final-total').textContent = finalWithBonuses;
-    }
-    
-    // Обработчики событий
     deliveryMethod.addEventListener('change', function() {
         if (this.value === 'delivery') {
             deliveryDiv.style.display = 'block';
@@ -169,15 +109,6 @@
             deliveryDiv.style.display = 'none';
             pickupDiv.style.display = 'block';
         }
-        updateDeliveryInfo();
-        updateFinalTotalWithBonuses();
     });
-    
-    bonusesInput.addEventListener('input', function() {
-        updateFinalTotalWithBonuses();
-    });
-    
-    // Запускаем при загрузке
-    updateDeliveryInfo();
 </script>
 {% endblock %}

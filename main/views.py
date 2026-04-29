@@ -136,16 +136,9 @@ def checkout(request):
             'subtotal': subtotal
         })
     
-    # Расчёт стоимости доставки
-    DELIVERY_PRICE = 300  # Стоимость доставки
-    FREE_DELIVERY_THRESHOLD = 1000  # Порог бесплатной доставки
-    
-    if total >= FREE_DELIVERY_THRESHOLD:
-        delivery_cost = 0
-        delivery_message = f"Бесплатная доставка (при заказе от {FREE_DELIVERY_THRESHOLD} ₽)"
-    else:
-        delivery_cost = DELIVERY_PRICE
-        delivery_message = f"Стоимость доставки: {DELIVERY_PRICE} ₽ (добавьте {FREE_DELIVERY_THRESHOLD - total} ₽ для бесплатной доставки)"
+    # Параметры доставки
+    FREE_DELIVERY_THRESHOLD = 1000
+    DELIVERY_PRICE = 300
     
     if request.method == 'POST':
         delivery_method = request.POST.get('delivery_method')
@@ -153,11 +146,13 @@ def checkout(request):
         pickup_point = request.POST.get('pickup_point', '')
         use_bonuses = int(request.POST.get('use_bonuses', 0))
         
-        # Для самовывоза доставка всегда бесплатная
+        # Расчёт стоимости доставки
         if delivery_method == 'pickup':
-            final_delivery_cost = 0
+            delivery_cost = 0
+        elif total >= FREE_DELIVERY_THRESHOLD:
+            delivery_cost = 0
         else:
-            final_delivery_cost = delivery_cost
+            delivery_cost = DELIVERY_PRICE
         
         # Проверяем использование бонусов
         if use_bonuses > request.user.bonus_points:
@@ -167,7 +162,7 @@ def checkout(request):
         if use_bonuses > total:
             use_bonuses = total
         
-        final_total = total - use_bonuses + final_delivery_cost
+        final_total = total - use_bonuses + delivery_cost
         
         # Создаем заказ
         order = Order.objects.create(
@@ -177,7 +172,7 @@ def checkout(request):
             delivery_method=delivery_method,
             used_bonus_points=use_bonuses,
             earned_bonus_points=int(total / 10),
-            delivery_cost=final_delivery_cost  # Добавьте это поле в модель Order
+            delivery_cost=delivery_cost
         )
         
         # Создаем позиции заказа
@@ -221,6 +216,14 @@ def checkout(request):
     # GET запрос - показываем форму оформления
     pickup_points = PickupPoint.objects.all()
     possible_bonuses = int(total / 10)
+    
+    # Рассчитываем стоимость доставки для отображения
+    if total >= FREE_DELIVERY_THRESHOLD:
+        delivery_cost = 0
+        delivery_message = f"Бесплатная доставка (при заказе от {FREE_DELIVERY_THRESHOLD} ₽)"
+    else:
+        delivery_cost = DELIVERY_PRICE
+        delivery_message = f"Стоимость доставки: {DELIVERY_PRICE} ₽ (добавьте {FREE_DELIVERY_THRESHOLD - total} ₽ для бесплатной доставки)"
     
     context = {
         'cart_items': cart_items,
