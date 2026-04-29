@@ -309,10 +309,16 @@ def order_history(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'main/order_history.html', {'orders': orders})
 
-@login_required
 def reviews(request):
-    """Страница с отзывами"""
+    """Страница с отзывами (доступна всем, но оставлять могут только авторизованные)"""
+    
+    # Обработка POST запроса (добавление отзыва)
     if request.method == 'POST':
+        # Проверяем, авторизован ли пользователь
+        if not request.user.is_authenticated:
+            messages.warning(request, 'Чтобы оставить отзыв, пожалуйста, войдите в систему')
+            return redirect('login')
+        
         form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
@@ -320,9 +326,12 @@ def reviews(request):
             review.save()
             messages.success(request, 'Спасибо за отзыв! Он будет опубликован после модерации.')
             return redirect('reviews')
+        else:
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
     else:
         form = ReviewForm()
     
+    # Получаем все одобренные отзывы
     reviews_list = Review.objects.filter(is_approved=True).order_by('-created_at')
     burgers = Burger.objects.filter(is_available=True)
     
