@@ -22,31 +22,28 @@
                     </div>
                     {% endfor %}
                     <hr>
+                    
                     <h5>Сумма заказа: {{ total }} ₽</h5>
                     
-                    <!-- Блок информации о доставке -->
-                    <div style="background: #f8f9fa; padding: 12px; border-radius: 10px; margin: 15px 0;">
-                        {% if total >= free_delivery_threshold %}
-                            <p style="color: green; margin: 0;">
-                                🚚 <strong>Бесплатная доставка!</strong>
-                            </p>
-                            <small>Доставка бесплатна при заказе от {{ free_delivery_threshold }} ₽</small>
+                    <!-- Блок доставки -->
+                    <div style="background: #f0f0f0; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                        <strong><i class="fas fa-truck"></i> Доставка:</strong><br>
+                        {% if total >= 1000 %}
+                            <span style="color: green;">🚚 Бесплатно (при заказе от 1000 ₽)</span>
                         {% else %}
-                            <p style="color: #F64B3C; margin: 0;">
-                                🚚 <strong>Стоимость доставки: {{ delivery_cost }} ₽</strong>
-                            </p>
-                            <small>Добавьте {{ free_delivery_threshold|add:"-"|add:total }} ₽ для бесплатной доставки</small>
+                            <span style="color: #F64B3C;">🚚 300 ₽ (добавьте {{ 1000|add:"-"|add:total }} ₽ для бесплатной доставки)</span>
                         {% endif %}
                     </div>
                     
-                    <h4 style="color: #F64B3C;">
+                    <h3 style="color: #F64B3C;">
                         Итого к оплате: 
-                        {% if total >= free_delivery_threshold %}
+                        {% if total >= 1000 %}
                             {{ total }} ₽
                         {% else %}
-                            {{ total|add:delivery_cost }} ₽
+                            {{ total|add:300 }} ₽
                         {% endif %}
-                    </h4>
+                    </h3>
+                    
                     <p>За этот заказ вы получите {{ possible_bonuses }} бонусов</p>
                 </div>
             </div>
@@ -83,6 +80,30 @@
                         </div>
                         
                         <div class="mb-3">
+                            <label class="form-label">Способ оплаты:</label>
+                            <div style="display: flex; gap: 15px; margin-top: 8px;">
+                                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 10px 15px; border: 2px solid #e0e0e0; border-radius: 10px; transition: all 0.3s; width: 100%;" class="payment-option">
+                                    <input type="radio" name="payment_method" value="online" checked style="margin: 0;">
+                                    <i class="fas fa-credit-card" style="color: #F64B3C; font-size: 20px;"></i>
+                                    <div>
+                                        <strong>Оплата на сайте картой</strong><br>
+                                        <small style="color: #666;">Visa, MasterCard, МИР</small>
+                                    </div>
+                                </label>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 10px 15px; border: 2px solid #e0e0e0; border-radius: 10px; transition: all 0.3s; width: 100%;" class="payment-option">
+                                    <input type="radio" name="payment_method" value="cash" style="margin: 0;">
+                                    <i class="fas fa-money-bill-wave" style="color: #4CAF50; font-size: 20px;"></i>
+                                    <div>
+                                        <strong>Оплата при получении</strong><br>
+                                        <small style="color: #666;">Наличными или картой курьеру</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
                             <label class="form-label">Использовать бонусы (у вас {{ user_bonuses }} баллов):</label>
                             <input type="number" name="use_bonuses" class="form-control" min="0" max="{{ user_bonuses }}" value="0">
                             <small class="text-muted">100 бонусов = 100 ₽ скидки</small>
@@ -96,19 +117,56 @@
     </div>
 </div>
 
+<style>
+    .payment-option {
+        transition: all 0.3s;
+    }
+    .payment-option:hover {
+        border-color: #F64B3C;
+        background-color: #fff5f3;
+    }
+    input[type="radio"]:checked + i + div + .payment-option {
+        border-color: #F64B3C;
+        background-color: #fff5f3;
+    }
+</style>
+
 <script>
     const deliveryMethod = document.getElementById('delivery_method');
     const deliveryDiv = document.getElementById('delivery_address_div');
     const pickupDiv = document.getElementById('pickup_point_div');
     
-    deliveryMethod.addEventListener('change', function() {
-        if (this.value === 'delivery') {
-            deliveryDiv.style.display = 'block';
-            pickupDiv.style.display = 'none';
-        } else {
-            deliveryDiv.style.display = 'none';
-            pickupDiv.style.display = 'block';
+    // Подсветка выбранного способа оплаты
+    const paymentOptions = document.querySelectorAll('.payment-option');
+    paymentOptions.forEach(option => {
+        const radio = option.querySelector('input[type="radio"]');
+        radio.addEventListener('change', function() {
+            paymentOptions.forEach(opt => {
+                opt.style.borderColor = '#e0e0e0';
+                opt.style.backgroundColor = 'transparent';
+            });
+            if (this.checked) {
+                option.style.borderColor = '#F64B3C';
+                option.style.backgroundColor = '#fff5f3';
+            }
+        });
+        // Если радио выбрано по умолчанию
+        if (radio.checked) {
+            option.style.borderColor = '#F64B3C';
+            option.style.backgroundColor = '#fff5f3';
         }
     });
+    
+    if (deliveryMethod) {
+        deliveryMethod.addEventListener('change', function() {
+            if (this.value === 'delivery') {
+                deliveryDiv.style.display = 'block';
+                pickupDiv.style.display = 'none';
+            } else {
+                deliveryDiv.style.display = 'none';
+                pickupDiv.style.display = 'block';
+            }
+        });
+    }
 </script>
 {% endblock %}

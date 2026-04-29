@@ -145,6 +145,7 @@ def checkout(request):
         delivery_address = request.POST.get('delivery_address', '')
         pickup_point = request.POST.get('pickup_point', '')
         use_bonuses = int(request.POST.get('use_bonuses', 0))
+        payment_method = request.POST.get('payment_method', 'cash')  # ДОБАВЛЕНО - способ оплаты
         
         # Расчёт стоимости доставки
         if delivery_method == 'pickup':
@@ -164,7 +165,7 @@ def checkout(request):
         
         final_total = total - use_bonuses + delivery_cost
         
-        # Создаем заказ
+        # Создаем заказ (ДОБАВЛЕНО payment_method)
         order = Order.objects.create(
             user=request.user,
             total_amount=final_total,
@@ -172,7 +173,8 @@ def checkout(request):
             delivery_method=delivery_method,
             used_bonus_points=use_bonuses,
             earned_bonus_points=int(total / 10),
-            delivery_cost=delivery_cost
+            delivery_cost=delivery_cost,
+            payment_method=payment_method  # ДОБАВЛЕНО
         )
         
         # Создаем позиции заказа
@@ -210,7 +212,12 @@ def checkout(request):
         # Очищаем корзину
         request.session['cart'] = {}
         
-        messages.success(request, f'Заказ #{order.id} успешно оформлен!')
+        # Сообщение об успешном заказе (ОБНОВЛЕНО)
+        if payment_method == 'online':
+            messages.success(request, f'Заказ #{order.id} успешно оформлен! Оплата будет проведена на сайте.')
+        else:
+            messages.success(request, f'Заказ #{order.id} успешно оформлен! Оплата при получении.')
+        
         return redirect('order_history')
     
     # GET запрос - показываем форму оформления

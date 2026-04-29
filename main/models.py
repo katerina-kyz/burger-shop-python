@@ -54,6 +54,10 @@ class Order(models.Model):
     used_bonus_points = models.IntegerField(default=0)
     earned_bonus_points = models.IntegerField(default=0)
     delivery_cost = models.IntegerField(default=0)
+    payment_method = models.CharField(max_length=20, choices=[
+        ('online', 'Оплата на сайте картой'),
+        ('cash', 'Оплата при получении')
+    ], default='cash', verbose_name='Способ оплаты')
     
     def __str__(self):
         return f"Order #{self.id} - {self.user.username}"
