@@ -53,6 +53,7 @@ class Order(models.Model):
     ])
     used_bonus_points = models.IntegerField(default=0)
     earned_bonus_points = models.IntegerField(default=0)
+    delivery_cost = models.IntegerField(default=0)
     
     def __str__(self):
         return f"Order #{self.id} - {self.user.username}"
