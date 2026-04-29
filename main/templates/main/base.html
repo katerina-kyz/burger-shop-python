@@ -89,6 +89,12 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(2px);
         }
+
+        /* Стиль для имени пользователя */
+        .navbar-nav .nav-link i.fa-user-circle {
+            margin-right: 5px;
+            color: #FFD700;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -108,7 +114,7 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'reviews' %}">Отзывы</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'map' %}">Точки выдачи</a></li>
                     {% if user.is_authenticated %}
-
+                        <!-- Корзина -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle position-relative" href="#" id="cartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-shopping-cart"></i>
@@ -127,14 +133,12 @@
                                     Перейти в корзину →
                                 </a>
                             </div>
-                        </li>                                     
-                        
+                        </li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'order_history' %}">Мои заказы</a></li>
                         <li class="nav-item">
-                            <span class="nav-link bonus-points" style="display: flex; align-items: center; gap: 5px;">
-                                <i class="fas fa-star" style="color: #FFD700;"></i>
-                                <strong style="font-size: 16px;">{{ user_bonuses }}</strong>
-                                <span style="font-size: 12px;">бонусов</span>
+                            <span class="nav-link bonus-points">
+                                <i class="fas fa-user-circle"></i> {{ user.username }} | 
+                                <i class="fas fa-star"></i> {{ user_bonuses }}
                             </span>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Выйти</a></li>
